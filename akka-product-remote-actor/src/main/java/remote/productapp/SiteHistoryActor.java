@@ -40,7 +40,7 @@ public class SiteHistoryActor extends UntypedActor {
             System.out.print("request String -->"+siteHistory);
 
             String profileId = (String)siteHistory.get("profileId");
-            List cartCatList = (List)siteHistory.get("cartCatList");
+                List cartCatList = (List)siteHistory.get("cartCatList");
             List cartProdList = (List)siteHistory.get("cartProdList");
             List orderCatList = (List)siteHistory.get("orderCatList");
             List orderProdList = (List)siteHistory.get("orderProdList");
@@ -51,23 +51,23 @@ public class SiteHistoryActor extends UntypedActor {
             if(sh != null){
 
 
-                if(cartCatList!=null || !cartCatList.isEmpty()) {
+                if(cartCatList!=null && !cartCatList.isEmpty()) {
                     sh.getCartCategoryList().addAll(cartCatList);
                 }
-                if(cartProdList!=null || !cartProdList.isEmpty()) {
+                if(cartProdList!=null && !cartProdList.isEmpty()) {
                     sh.getCartProductList().addAll(cartProdList);
                 }
-                if(orderCatList!=null || !orderCatList.isEmpty()) {
+                if(orderCatList!=null && !orderCatList.isEmpty()) {
                     sh.getOrderCategoryList().addAll(orderCatList);
                 }
-                if(orderProdList!=null || !orderProdList.isEmpty()) {
+                if(orderProdList!=null && !orderProdList.isEmpty()) {
                     sh.getOrderProductList().addAll(orderProdList);
 
                 }
-                if(rvProdList!=null || !rvProdList.isEmpty()) {
+                if(rvProdList!=null && !rvProdList.isEmpty()) {
                     sh.getRvProductList().addAll(rvProdList);
                 }
-                if(rvCatList!=null || !rvCatList.isEmpty()) {
+                if(rvCatList!=null && !rvCatList.isEmpty()) {
                     sh.getRvCategoryList().addAll(rvCatList);
                 }
                 //store
@@ -78,23 +78,23 @@ public class SiteHistoryActor extends UntypedActor {
 
                 sh = new SiteHistory();
                 sh.setGlobalId(profileId);
-                if(cartCatList!=null || !cartCatList.isEmpty()) {
+                if(cartCatList!=null && !cartCatList.isEmpty()) {
                     sh.setCartCategoryList(cartCatList);
                 }
-                if(cartProdList!=null || !cartProdList.isEmpty()) {
+                if(cartProdList!=null && !cartProdList.isEmpty()) {
                     sh.setCartProductList(cartProdList);
                 }
-                if(orderCatList!=null || !orderCatList.isEmpty()) {
+                if(orderCatList!=null && !orderCatList.isEmpty()) {
                     sh.setOrderCategoryList(orderCatList);
                 }
-                if(orderProdList!=null || !orderProdList.isEmpty()) {
+                if(orderProdList!=null && !orderProdList.isEmpty()) {
                     sh.setOrderProductList(orderProdList);
 
                 }
-                if(rvProdList!=null || !rvProdList.isEmpty()) {
+                if(rvProdList!=null && !rvProdList.isEmpty()) {
                     sh.setRvProductList(rvProdList);
                 }
-                if(rvCatList!=null || !rvCatList.isEmpty()) {
+                if(rvCatList!=null && !rvCatList.isEmpty()) {
                     sh.setRvCategoryList(rvCatList);
                 }
                 //store
@@ -113,7 +113,7 @@ public class SiteHistoryActor extends UntypedActor {
         SiteHistory sh = null;
         Gson gson = new Gson();
         String json = jedis.get(key);
-        if(json !=null) {
+        if(json !=null && json.trim() !="") {
             sh = gson.fromJson(json, SiteHistory.class);
         }
         //fill all attributes

@@ -10,10 +10,14 @@ import models.Product;
 import models.ProductStore;
 import akka.actor.Scheduler;
 import play.*;
+import play.data.DynamicForm;
+import play.data.Form;
 import play.libs.Akka;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.*;
+
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -34,7 +38,7 @@ import static akka.pattern.Patterns.ask;
  * asynchronously delay sending a response for 1 second.
  */
 @Singleton
-public class ProductController extends Controller {
+public class PersonalizationController extends Controller {
 
     private final ActorSystem actorSystem;
     private final ExecutionContextExecutor exec;
@@ -55,7 +59,7 @@ public class ProductController extends Controller {
      * An {@link ExecutionContextExecutor} implements both interfaces.
      */
     @Inject
-    public ProductController(ActorSystem actorSystem, ExecutionContextExecutor exec) {
+    public PersonalizationController(ActorSystem actorSystem, ExecutionContextExecutor exec) {
         this.actorSystem = actorSystem;
         this.exec = exec;
     }
@@ -66,5 +70,30 @@ public class ProductController extends Controller {
 
         return FutureConverters.toJava(ask(actor, new String(String.valueOf(id)), 10000))
                 .thenApply(response -> ok(Util.createResponse( Json.toJson((Product)response),true)));
+    }
+
+    public CompletionStage<Result> createProfile(int id) {
+        String actorPath = "akka.tcp://ProductSystem@127.0.0.1:2552/user/product"; // get akka path of your worker, this will not show in my example
+        ActorSelection actor = actorSystem.actorSelection(actorPath); // get actor ref
+
+        return FutureConverters.toJava(ask(actor, new String(String.valueOf(id)), 10000))
+                .thenApply(response -> ok(Util.createResponse( Json.toJson((Product)response),true)));
+    }
+
+    public CompletionStage<Result> collect() {
+        DynamicForm dynamicForm = Form.form().bindFromRequest();
+        String profileId = dynamicForm.get("profileId");
+        String rvCategory = dynamicForm.get("rvCatList");
+
+        List rvCatList = Arrays.asList(rvCategory.split(","));
+        Map m = new HashMap();
+        m.put("profileId",profileId);
+        m.put("rvCatList",rvCatList);
+
+        String actorPath = "akka.tcp://ProductSystem@127.0.0.1:2552/user/siteHistory"; // get akka path of your worker, this will not show in my example
+        ActorSelection actor = actorSystem.actorSelection(actorPath); // get actor ref
+
+        return FutureConverters.toJava(ask(actor, m, 10000))
+                .thenApply(response -> ok((String) response));
     }
 }
