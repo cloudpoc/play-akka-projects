@@ -82,15 +82,15 @@ public class PersonalizationController extends Controller {
 
     public CompletionStage<Result> collect() {
         DynamicForm dynamicForm = Form.form().bindFromRequest();
-        String profileId = dynamicForm.get("profileId");
+        String globalId = dynamicForm.get("globalId");
         String rvCategory = dynamicForm.get("rvCatList");
 
         List rvCatList = Arrays.asList(rvCategory.split(","));
         Map m = new HashMap();
-        m.put("profileId",profileId);
+        m.put("globalId",globalId);
         m.put("rvCatList",rvCatList);
 
-        String actorPath = "akka.tcp://ProductSystem@127.0.0.1:2552/user/siteHistory"; // get akka path of your worker, this will not show in my example
+        String actorPath = "akka.tcp://ProductSystem@127.0.0.1:2552/user/UserProfile"; // get akka path of your worker, this will not show in my example
         ActorSelection actor = actorSystem.actorSelection(actorPath); // get actor ref
 
         return FutureConverters.toJava(ask(actor, m, 10000))
