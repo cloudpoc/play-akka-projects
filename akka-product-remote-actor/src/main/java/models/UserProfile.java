@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by bthiru on 11/16/2017.
  */
-public class SiteHistory {
+public class UserProfile {
     public List getRvCategoryList() {
         if(rvCategoryList==null) rvCategoryList= new ArrayList();
         return rvCategoryList;
@@ -16,13 +16,22 @@ public class SiteHistory {
         this.rvCategoryList = rvCategoryList;
     }
 
-    public List getRvProductList() {
-        if(rvProductList==null) rvProductList= new ArrayList();
-        return rvProductList;
+    public List getRvAccessoryList() {
+        if(rvAccessoryList==null) rvAccessoryList= new ArrayList();
+        return rvAccessoryList;
     }
 
-    public void setRvProductList(List rvProductList) {
-        this.rvProductList = rvProductList;
+    public void setRvAccessoryList(List rvAccessoryList) {
+        this.rvAccessoryList = rvAccessoryList;
+    }
+
+    public List getRvDeviceList() {
+        if(rvDeviceList==null) rvDeviceList= new ArrayList();
+        return rvDeviceList;
+    }
+
+    public void setRvDeviceList(List rvDeviceList) {
+        this.rvDeviceList = rvDeviceList;
     }
 
     public List getCartCategoryList() {
@@ -62,7 +71,8 @@ public class SiteHistory {
     }
 
     private List rvCategoryList;
-    private List rvProductList;
+    private List rvDeviceList;
+    private List rvAccessoryList;
     private List cartCategoryList;
     private List cartProductList;
     private List orderCategoryList;
