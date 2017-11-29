@@ -1,19 +1,13 @@
 package controllers;
 
-import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import javax.inject.*;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import models.Product;
-import models.ProductStore;
+
 import akka.actor.Scheduler;
-import play.*;
+import models.BrowseInfo;
 import play.data.DynamicForm;
 import play.data.Form;
-import play.libs.Akka;
-import play.libs.F;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -21,15 +15,12 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.ExecutionContext;
-import scala.concurrent.duration.Duration;
 import scala.concurrent.ExecutionContextExecutor;
 import utils.Util;
 import scala.compat.java8.FutureConverters;
-import javax.inject.*;
-import java.util.concurrent.CompletionStage;
+
 import static akka.pattern.Patterns.ask;
 
 /**
@@ -43,13 +34,6 @@ public class PersonalizationController extends Controller {
     private final ActorSystem actorSystem;
     private final ExecutionContextExecutor exec;
 
-    public Result retrieve(int id) {
-        if (ProductStore.getInstance().getProduct(id) == null) {
-            return notFound(Util.createResponse("Product with id:" + id + " not found", false));
-        }
-        JsonNode jsonObjects = Json.toJson(ProductStore.getInstance().getProduct(id));
-        return ok(Util.createResponse(jsonObjects, true));
-    }
     /**
      * @param actorSystem We need the {@link ActorSystem}'s
      * {@link Scheduler} to run code after a delay.
@@ -63,34 +47,68 @@ public class PersonalizationController extends Controller {
         this.actorSystem = actorSystem;
         this.exec = exec;
     }
+
     // From Remote Actor
     public CompletionStage<Result> getProduct(int id) {
-        String actorPath = "akka.tcp://ProductSystem@127.0.0.1:2552/user/product"; // get akka path of your worker, this will not show in my example
+        String actorPath = "akka.tcp://PersonalizationApp@127.0.0.1:2552/user/profileDataService"; // get akka path of your worker, this will not show in my example
         ActorSelection actor = actorSystem.actorSelection(actorPath); // get actor ref
 
         return FutureConverters.toJava(ask(actor, new String(String.valueOf(id)), 10000))
-                .thenApply(response -> ok(Util.createResponse( Json.toJson((Product)response),true)));
+                .thenApply(response -> ok(Util.createResponse( Json.toJson((BrowseInfo)response),true)));
     }
 
-    public CompletionStage<Result> createProfile(int id) {
-        String actorPath = "akka.tcp://ProductSystem@127.0.0.1:2552/user/product"; // get akka path of your worker, this will not show in my example
-        ActorSelection actor = actorSystem.actorSelection(actorPath); // get actor ref
-
-        return FutureConverters.toJava(ask(actor, new String(String.valueOf(id)), 10000))
-                .thenApply(response -> ok(Util.createResponse( Json.toJson((Product)response),true)));
-    }
 
     public CompletionStage<Result> collect() {
         DynamicForm dynamicForm = Form.form().bindFromRequest();
-        String profileId = dynamicForm.get("profileId");
-        String rvCategory = dynamicForm.get("rvCatList");
+        String globalId = dynamicForm.get("globalId");
+        String mtn = dynamicForm.get("mtn");
+        String accountNo = dynamicForm.get("accountNo");
 
-        List rvCatList = Arrays.asList(rvCategory.split(","));
+        String cartDevice = dynamicForm.get("cartDeviceList");
+        List cartDeviceList=null;
+        if(cartDevice!=null){
+            cartDeviceList= Arrays.asList(cartDevice.split(","));
+        }
+        String cartAccessory = dynamicForm.get("cartAccessoryList");
+        List cartAccessoryList=null;
+        if(cartAccessory!=null){
+            cartAccessoryList= Arrays.asList(cartAccessory.split(","));
+        }
+        String cartCategory = dynamicForm.get("cartCategoryList");
+        List cartCategoryList = null;
+        if(cartCategory!=null){
+             cartCategoryList = Arrays.asList(cartCategory.split(","));
+        }
+        String browsedDevice = dynamicForm.get("browsedDeviceList");
+        List browsedDeviceList =null;
+        if(browsedDevice!=null){
+            browsedDeviceList= Arrays.asList(browsedDevice.split(","));
+        }
+        String browsedAccessory = dynamicForm.get("browsedAccessoryList");
+        List browsedAccessoryList = null;
+        if(cartCategory!=null){
+            browsedAccessoryList = Arrays.asList(browsedAccessory.split(","));
+        }
+        String browsedCategory = dynamicForm.get("browsedCategoryList");
+        List browsedCategoryList = null;
+        if(cartCategory!=null){
+            browsedCategoryList= Arrays.asList(browsedCategory.split(","));
+        }
+
         Map m = new HashMap();
-        m.put("profileId",profileId);
-        m.put("rvCatList",rvCatList);
+        m.put("globalId",globalId);
+        m.put("accountNo",accountNo);
+        m.put("mtn",mtn);
 
-        String actorPath = "akka.tcp://ProductSystem@127.0.0.1:2552/user/siteHistory"; // get akka path of your worker, this will not show in my example
+        m.put("cartDeviceList",cartDeviceList);
+        m.put("cartAccessoryList",cartAccessoryList);
+        m.put("cartCategoryList",cartCategoryList);
+
+        m.put("browsedDeviceList",browsedDeviceList);
+        m.put("browsedAccessoryList",browsedAccessoryList);
+        m.put("browsedCategoryList",browsedCategoryList);
+
+        String actorPath = "akka.tcp://PersonalizationApp@127.0.0.1:2552/user/profileDataCollector"; // get akka path of your worker, this will not show in my example
         ActorSelection actor = actorSystem.actorSelection(actorPath); // get actor ref
 
         return FutureConverters.toJava(ask(actor, m, 10000))

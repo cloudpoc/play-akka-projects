@@ -8,8 +8,8 @@ GET     /                           controllers.HomeController.index
 GET     /count                      controllers.CountController.count
 # An example controller showing how to write asynchronous code
 GET     /message                    controllers.AsyncController.message
-GET     /product/:id		controllers.PersonalizationController.getProduct(id:Int)
-POST    /personalization/siteHistory           controllers.PersonalizationController.collect
+GET     /personalization/profile/:id		controllers.PersonalizationController.getProduct(id:Int)
+POST    /personalization/profile           controllers.PersonalizationController.collect
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
