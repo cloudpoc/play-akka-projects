@@ -1,6 +1,6 @@
 # play-akka-projects using java
 
-This is a basic example project using Play and Akka . Here we have created a play app to expose rest service which wil return the product details . Once play recive the http request , it will connect remote akka instance to get the product details. PLZ FEEL FREE TO ADD MORE FEATURE TO IT
+This is as part of personalization POC . Mainly to collect customer trend in terms of recently viewed product,recently viewed categories etc.
 
 Before you download makesure below s/w are installed in your machine
 
@@ -23,6 +23,17 @@ TO START PLAY APP INSTANCE -- open a command window from play-akka-projects fold
 3) sbt compile
 4) sbt run
 
-HIT BELOW URL TO GET THE PRODUCT DETAILS
+HIT BELOW URL TO {POST} THE DATA
 --------------------------------------------
-http://localhost:9000/product/1
+http://localhost:9000/personalization/profile
+
+{
+   "globalId": "113656",
+   "browsedDeviceList": "IPHONE X,Nokia 80000"
+}
+
+HIT BELOW URL TO {GET} THE DATA
+--------------------------------------------
+http://localhost:9000/personalization/profile/{ID}
+
+Note: Make sure a redis server running in localhost 
